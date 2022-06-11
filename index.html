@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venue Booking System</title>
+</head>
+
+<body>
+    <h5>Check Room Availablity</h5>
+    <div id="checkRoomAvailability"></div>
+    <br>
+    <hr>
+    <h5>Current bookings that occur today</h5>
+    <div id="currentBookingDataForToday"></div>
+    <h5>Current bookings that occur this week</h5>
+    <div id="currentBookingDataForThisWeek"></div>
+    <h5>Current bookings that occur next week</h5>
+    <div id="currentBookingDataForNextWeek"></div>
+
+    <script>
+
+        /* Current Booking Data */
+        const bookingData = [
+            {
+                "id": 1,
+                "roomId": "A101",
+                "startTime": "2022-06-14 13:00:00",
+                "endTime": "2022-06-14 14:00:00",
+                "title": "Lunch with Petr"
+            },
+            {
+                "id": 2,
+                "roomId": "A101",
+                "startTime": "2022-06-14 14:00:00",
+                "endTime": "2022-06-14 15:00:00",
+                "title": "Sales Weekly Meeting"
+            },
+            {
+                "id": 3,
+                "roomId": "A101",
+                "startTime": "2022-06-14 16:00:00",
+                "endTime": "2022-06-14 18:00:00",
+                "title": "Anastasia Website Warroom"
+            },
+            {
+                "id": 4,
+                "roomId": "A101",
+                "startTime": "2022-06-15 13:00:00",
+                "endTime": "2022-06-15 14:00:00",
+                "title": "One-on-One Session"
+            },
+            {
+                "id": 5,
+                "roomId": "A101",
+                "startTime": "2022-06-15 16:00:00",
+                "endTime": "2022-06-15 18:00:00",
+                "title": "UGC Sprint Planning"
+            },
+            {
+                "id": 6,
+                "roomId": "A102",
+                "startTime": "2022-06-16 09:00:00",
+                "endTime": "2022-06-20 18:00:00",
+                "title": "5-Day Design Sprint Workshop"
+            },
+            {
+                "id": 7,
+                "roomId": "Auditorium",
+                "startTime": "2022-06-09 09:00:00",
+                "endTime": "2022-06-13 19:00:00",
+                "title": "Thai Tech Innovation 2019"
+            },
+            {
+                "id": 8,
+                "roomId": "A101",
+                "startTime": "2022-06-14 10:00:00",
+                "endTime": "2022-06-14 13:00:00",
+                "title": "Raimonland project"
+            },
+            {
+                "id": 9,
+                "roomId": "A102",
+                "startTime": "2022-06-16 18:00:00",
+                "endTime": "2022-06-16 20:00:00",
+                "title": "Management Meetinng"
+            },
+            {
+                "id": 10,
+                "roomId": "A101",
+                "startTime": "2022-06-20 14:00:00",
+                "endTime": "2022-06-22 11:00:00",
+                "title": "3-day workshop Corgi costume"
+            }
+        ];
+
+        //(a) function that accept room, startTime, endTime and return if the room is available for booking
+        const checkAvailability = (roomId, startTime, endTime) => {
+
+            //filter current booking data 
+            const currentBookingData = bookingData.filter(function (data) {
+                //check the room is available with requested startTime and endTime
+                if (roomId == data.roomId) {
+
+                    if (startTime < data.startTime &&
+                        endTime <= data.startTime)
+                        return false;
+
+                    if (startTime >= data.endTime &&
+                        endTime > data.endTime)
+                        return false;
+
+                    return true;
+                }
+            });
+
+            console.log(currentBookingData);
+            //check length of currentBookingData 
+            //(return true if there is no current booking during requested start-end time)
+            if (currentBookingData.length == 0) {
+                return true
+            } else {
+                return false
+            }
+
+        }
+
+        //return booking is available or not (true/false) in HTML div
+        document.getElementById('checkRoomAvailability').innerHTML = checkAvailability("A101", "2022-06-15 13:00:00", "2022-06-15 17:00:00")
+
+
+        //(b) function that return all current bookings that occur today, this week and next week for a room
+        const getBookingsForWeek = (roomId) => {
+            //get today date
+            const today_date = new Date();
+            //get first day of this week
+            const first_day_of_this_week = new Date(today_date.setDate(today_date.getDate() - today_date.getDay())).setHours(0, 0, 0, 0);
+            //get last day of this week
+            const last_day_of_this_week = new Date(today_date.setDate(today_date.getDate() - today_date.getDay() + 6)).setHours(0, 0, 0, 0);
+            //get next 7 day date
+            const next_week_today = new Date();
+            next_week_today.setDate(next_week_today.getDate() + 7);
+            //get first day of next week
+            const first_day_of_next_week = new Date(next_week_today.setDate(next_week_today.getDate() - next_week_today.getDay())).setHours(0, 0, 0, 0);
+            //get last day of next week
+            const last_day_of_next_week = new Date(next_week_today.setDate(next_week_today.getDate() - next_week_today.getDay() + 6)).setHours(0, 0, 0, 0);
+
+            //current booking for today
+            const currentBookingDataForToday = bookingData.filter((data) => {
+                let start_date = new Date(new Date(data.startTime)).setHours(0, 0, 0, 0);
+                let end_date = new Date(new Date(data.endTime)).setHours(0, 0, 0, 0);
+
+                if (roomId == data.roomId) {
+                    let current_date = new Date(new Date()).setHours(0, 0, 0, 0);
+                    return end_date >= current_date && start_date <= current_date
+                }
+            });
+
+            //current booking for this week
+            const currentBookingDataForThisWeek = bookingData.filter((data) => {
+                let start_date = new Date(new Date(data.startTime)).setHours(0, 0, 0, 0);
+                let end_date = new Date(new Date(data.endTime)).setHours(0, 0, 0, 0);
+
+                if (roomId == data.roomId) {
+                    return start_date >= first_day_of_this_week && start_date <= last_day_of_this_week || end_date >= first_day_of_this_week && end_date <= last_day_of_this_week
+                }
+            });
+
+
+            //current booking for next week
+            const currentBookingDataForNextWeek = bookingData.filter((data) => {
+                let start_date = new Date(new Date(data.startTime)).setHours(0, 0, 0, 0);
+                let end_date = new Date(new Date(data.endTime)).setHours(0, 0, 0, 0);
+
+                if (roomId == data.roomId) {
+                    return start_date >= first_day_of_next_week && start_date <= last_day_of_next_week || end_date >= first_day_of_next_week && end_date <= last_day_of_next_week
+                }
+            });
+
+            //return all booking data for today, this week and next week
+            return [JSON.stringify(currentBookingDataForToday), JSON.stringify(currentBookingDataForThisWeek), JSON.stringify(currentBookingDataForNextWeek)]
+        }
+
+        //return current booking data in HTML div
+        document.getElementById("currentBookingDataForToday").innerHTML = getBookingsForWeek("A101")[0]
+        document.getElementById("currentBookingDataForThisWeek").innerHTML = getBookingsForWeek("A101")[1]
+        document.getElementById("currentBookingDataForNextWeek").innerHTML = getBookingsForWeek("A101")[2]
+
+    </script>
+</body>
+
+</html>
